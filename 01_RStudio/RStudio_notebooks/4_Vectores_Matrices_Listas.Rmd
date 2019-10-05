@@ -1,0 +1,804 @@
+---
+title: "4_Vectores_Matrices_Factores_Listas_DataFrames"
+author: "Marco R."
+date: "04/10/2019"
+output: 
+  html_document: 
+    fig_caption: yes
+    highlight: haddock
+    number_sections: yes
+    theme: cosmo
+    toc: yes
+---
+
+
+
+# Vectores
+
+Después de una semana en Las Vegas y cero Ferraris en tu garage, decides que es hora de empezar a utilizar tus super-poderes analíticos.
+
+Antes de hacer un primer análisis, decides llevar un registro de todas tus ganancias y pérdidas de la semana pasada:
+
+En el poker:
+- Lunes: ganaste 140
+- Martes: perdiste 50
+- Miercoles: ganaste 20
+- Jueves: perdiste 120
+- Viernes: ganaste 240
+
+En la ruleta: 
+- Lunes: perdiste 24
+- Martes: perdiste 50
+- Miercoles: ganaste 100
+- Jueves: perdiste 350
+- Viernes: ganaste 10
+
+
+Solamente has jugado poker y ruleta, porque un grupo de adivinos se ha apoderado de la mesa de dados. Para poder utilizar esos datos en R, decides crear las variables `vector_poker` y `vector_ruleta`.
+
+```{r eval=FALSE}
+# Resultados en la mesa de poker en la semana
+vector_poker <- c(140, -50, 20, -120, 240)
+
+# Resultados en la ruleta en la semana
+vector_ruleta <- c(-24, -50, 100, -350, 10)
+```
+
+
+```{r}
+# Creamos un vector con los días de la semana
+dias_semana = c("Lunes", "Martes", "Miercoles", "Jueves", "Viernes")
+```
+
+
+```{r}
+# Asignamos los nombres a los dos vectores de poker y ruletas
+names(vector_poker) <- dias_semana
+names(vector_ruleta) <- dias_semana
+
+# Imprimimos los resultados
+vector_ruleta
+vector_poker
+```
+
+
+```{r}
+# Alternativa - Asignar los nombres a los valores del vector_poker
+# names(vector_poker) <- c("Lunes", "Martes", "Miercoles", "Jueves", "Viernes")
+```
+
+> La instrucción de arriba está # comentada, simplemente quitar el comento # para ejecutarla.
+
+
+## Calculando las ganancias totales
+
+Ahora que tienes los resultados del poker y la ruleta en un vector con elementos apropiadamente nombrados, puedes empezar a hacer análisis.
+
+
+Veremos como encontrar la siguiente información:
+- La ganancia/pérdida total por cada día de la semana.
+- La ganancia/pérdida total en la semana.
+- Sabremos si estas ganando o perdiendo dinero en el poker y en la ruleta.
+
+
+```{r}
+#  Creamos un vector númerico 4,5,6 llamado vector_B
+vector_B <- c(4, 5, 6)
+
+# Realizamos la suma del vector_B y vector_numerico
+vector_B + vector_numerico
+```
+
+
+
+Primero, hay que saber cuál fue la ganancia/pérdida por cada día. La ganancia neta de cada día es la suma de las ganancias/pérdidas que hiciste en el poker y en la ruleta. 
+
+
+```{r}
+# Calculando las ganancias/pérdidas diarias:
+total_diario <- vector_poker + vector_ruleta
+
+total_diario
+```
+
+
+```{r}
+# En caso de rectificar algunos de los valorse al "vuelo" utilizamos la función fix()
+fix(vector_poker)
+```
+
+
+## Calculando ganancias totales (3)
+
+Basado en los análisis previos, parece que tuviste una mezcla de días buenos y malos. Esto no era lo que tu ego esperaba, y te preguntas si quizás hay una (muy pequeña) posibilidad de que hayas perdido dinero en la semana.
+
+
+```{r}
+# Ganaste o perdiste durante la semana al poker?
+vector_poker
+total_poker = sum(vector_poker)
+total_poker
+```
+
+
+```{r}
+# Ganaste o perdiste durante la semana a la ruleta?
+total_ruleta = sum(vector_ruleta)
+total_ruleta
+```
+
+
+```{r}
+#ganancias en el poker son más altas que en la ruleta:
+comparativa <- total_poker > total_ruleta
+```
+
+
+
+
+
+```{r}
+# Visualizamos solo los datos del jueves y viernes
+vector_poker[c(4,5)]
+
+# Visualizamos solo los datos del jueves y viernes
+vector_poker[c(4:5)]
+
+# Visualizamos los datos excepto el lunes
+vector_poker[c(-1)]
+
+# Visualizamos solo los datos del martes, miercoles y jueves
+vector_poker[c(2:4)]
+
+# Visualizamos solo los datos del martes, miércoles y jueves
+vector_poker[c(2,3,4)]
+```
+
+
+## Más estadísticos
+
+```{r}
+# Promedio de la ruleta
+promedio_ruleta = mean(vector_ruleta)
+promedio_ruleta
+
+# Promedio de la ruleta miercoles, jueves, viernes
+promedio_ultimos_3dias <- mean(vector_ruleta[c(3:5)])
+promedio_ultimos_3dias
+
+
+# Que días obtuviste ganancias en el poker?
+positivos_poker <- vector_poker > 0
+positivos_poker
+
+# Que días obtuviste ganancias en el ruleta?
+positivos_ruleta <- vector_ruleta > 0
+positivos_ruleta
+ 
+# Selecciona los valores de vector_ruleta que fueron ganancias
+ganancias_ruleta <- vector_ruleta[positivos_ruleta]
+ganancias_ruleta
+```
+
+
+
+
+* * *
+
+# ¿Que es una Matriz?
+
+En R, una matriz es un conjunto de elementos del mismo tipo (numérico, caracter o lógico) arreglados de forma rectangular en filas y columnas. Como una matriz se compone de filas y columnas decimos que es un objeto de dos dimensiones. 
+
+
+```{r}
+
+matrix(1:9, byrow = TRUE, nrow = 3)
+
+```
+
+```{r}
+
+matrix(1:9, byrow = FALSE, nrow = 3)
+
+```
+
+
+## Analizando matrices
+
+Es hora de ensuciarnos las manos. En los siguientes ejercicios vamos a analizar los números de las películas de Star Wars. Que la fuerza te acompañe!
+
+En el editor, se definen tres vectores. Cada uno representa el dinero hecho en taquilla por las primeras tres películas de la saga. El primer elemento de cada vector indica los ingresos obtenidos en Estados Unidos, el segundo es el dinero hecho fuera de los Estados Unidos (fuente: Wikipedia).
+
+```{r}
+# Taquilla de Star Wars: En Millones de dólares (USD)!
+# Primer elemento taquilla en EEUU, segundo taquilla fuera de EEUU.
+new_hope <- c(460.998, 314.400)
+empire_strikes <- c(290.475, 247.900)
+return_jedi <- c(309.306, 165.800)
+```
+
+
+
+```{r}
+# Agrega el código para construir la matriz
+star_wars_matrix <- matrix(c(new_hope, empire_strikes, return_jedi), byrow = TRUE, nrow = 3)
+```
+
+
+```{r}
+# Evaluamos si es una matriz
+is.matrix(star_wars_matrix)
+```
+
+```{r}
+# Convertimos si es una matriz
+as.matrix(star_wars_matrix)
+```
+
+
+```
+
+## Nombrando a las filas y columnas de una matriz
+rownames(mi_matriz) <- vector_nombres_filas
+colnames(mi_matriz) <- vector_nombres_columnas
+
+## columnas > EEUU // no-EEUU
+## filas > "A New Hope", "The Empire Strikes Back", "Return of the Jedi" 
+
+```
+
+
+## Calculando la taquilla mundial
+
+Una de las cosas más importantes para quienes han invertido en hacer una película no es que tan buena es, sino cuánto dinero hace en la taquilla mundial!
+
+Para calcular el total de la taquilla tienes que sumar lo que la película hizo en EEUU y fuera de EEUU. Como cada fila contiene los datos de una película, debemos sumar los dos elementos de cada fila. 
+
+```
+vector_sumas_filas <- rowSums(mi_matriz)
+```
+
+```{r}
+# Suma de taquillas
+taquilla_mundial <- rowSums(star_wars_matrix)
+taquilla_mundial
+
+## rowsum(star_wars_matrix,'group',TRUE)
+```
+
+
+## Agregando la columna de taquilla mundial
+
+En el ejercicio anterior calculamos un vector que tenía información sobre la taquilla mundial para cada una de las tres películas. Sin embargo este vector no es parte de nuestra matriz `star_wars_matrix`.
+
+```
+matriz_grande <- cbind(matriz1, matriz2, vector1, vector2)
+```
+
+```{r}
+matriz_grande <- cbind(star_wars_matrix, taquilla_mundial)
+matriz_grande
+```
+
+```{r}
+vector_nombres_col <- c("EEUU","no-EEUU", "taquilla mundial")
+colnames(matriz_grande) <- vector_nombres_col
+matriz_grande
+```
+
+
+Combina las filas dos matrices de la siguiente manera: 
+```
+rbind(matrix1, matrix2)
+```
+
+```{r}
+# Construye la primera matriz
+taquillas <- c(461, 314.4, 290.5, 247.9, 309.3, 165.8)
+nombres <- c("A New Hope","The Empire Strikes Back","Return of the Jedi")
+nombres_columnas <- c("EEUU","no-EEUU")
+star_wars_matrix
+
+
+#  Construye la segunda matriz
+taquillas2 <- c(474.5, 552.5, 310.7, 338.7, 380.3, 468.5)
+nombres2 <- c("The Phantom Menace", "Attack of the Clones", "Revenge of the Sith")
+
+star_wars_matrix2
+```
+
+
+
+```{r}
+# Matriz que contiene los datos para la primera trilogía
+star_wars_matrix  
+
+# Matriz que contiene los datos para la segunda trilogía
+star_wars_matrix2 
+
+# Combina ambas trilogías en una sola matriz
+todas_star_wars <- 
+```
+
+
+
+
+```{r}
+# Matriz que contiene los datos para la primera trilogía
+star_wars_matrix  
+
+# Matriz que contiene los datos para la segunda trilogía
+star_wars_matrix2 
+
+# Combina ambas trilogías en una sola matriz
+todas_star_wars <- rbind(star_wars_matrix, star_wars_matrix2)
+```
+
+
+## Taquilla total para toda la saga
+- Calcula el ingreso total para las columnas EEUU y no-EEUU, asigna estos totales al vector `taquilla_por_region`. Utiliza la función [`colSums()`](http://www.rdocumentation.org/packages/base/functions/colSums).
+- Imprime `taquilla_por_region` a la consola. ¿En que región generó mas ingresos la saga?
+
+
+```{r}
+# Primera matriz
+taquillas <- c(461, 314.4, 290.5, 247.9, 309.3, 165.8)
+nombres <- c("A New Hope","The Empire Strikes Back","Return of the Jedi")
+nombres_columnas <- c("US","non-US")
+star_wars_matrix <- matrix(taquillas, nrow = 3, byrow = TRUE, dimnames = list(nombres, nombres_columnas))
+
+# Segunda matriz
+taquillas2 <- c(474.5, 552.5, 310.7, 338.7, 380.3, 468.5)
+nombres2 <- c("The Phantom Menace", "Attack of the Clones", "Revenge of the Sith")
+star_wars_matrix2 <- matrix(taquillas2, nrow=3, byrow = TRUE, dimnames = list(nombres2, nombres_columnas))
+
+# Combina los datos de ambas trilogías en una matriz
+todas_star_wars <- rbind(star_wars_matrix, star_wars_matrix2)
+```
+
+
+```{r}
+# Datos para todas las películas de Star Wars
+todas_star_wars
+
+# Total de taquilla para EEUU y no-EEUU
+taquilla_por_region <- 
+```
+
+
+## Seleccionando elementos de una matriz
+
+De manera similar  a los vectores, podemos usar los corchetes `[]` para seleccionar elementos de una matriz. Recuerda que las matrices son objetos de dos dimensiones, así que cada elemento tiene dos índices: el de la fila y el de la columna. Para seleccionar elementos de una matriz hay que indicar los índices de las filas y los índices de las columnas separados por coma. Estos ejemplos harán más claro como seleccionar valores de una matriz, es aconsejable que experimentes en la consola con alguna matriz que construyas.
+
+- `my_matrix[1,2]` selecciona el elemento que está en la primera fila y en la segunda columna.
+- `my_matrix[1:3,2:4]` selecciona los elementos de las filas 1,2,3 y las columnas 2,3,4.
+
+Si quieres seleccionar todos los elementos de una fila o una columna solo deja en blanco el espacio correspondiente:
+
+- `my_matrix[,1]` selecciona todos los elementos de la primera columna.
+- `my_matrix[1,]` selecciona todos los elementos de la primera fila.
+
+### Practiquemos con las matrices de Star Wars!
+
+- Calcula el promedio de taquilla para la región no-EEUU, asigna el resultado a la variable `promedio_noEEUU`.
+- Calcula el promedio de taquilla para EEUU, pero únicamente para las primeras dos películas. Asigna el resultado a la variable `promedio_EEUU`.
+
+```{r}
+# Taquilla Star Wars, en Millones
+# Construcción de la matriz
+taquillas <- c(461, 314.4, 290.5, 247.9, 309.3, 165.8)
+nombres <- c("A New Hope","The Empire Strikes Back","Return of the Jedi")
+nombres_columnas <- c("EEUU","no-EEUU")
+star_wars_matrix <- matrix(taquillas, nrow = 3, byrow = TRUE, dimnames = list(nombres, nombres_columnas))
+
+# Imprime la matriz construida a la consola
+star_wars_matrix 
+
+# Promedio para la región no-EEUU
+promedio_noEEUU  <-   
+  
+# Promedio para EEUU (solamente dos primeras películas)
+promedio_EEUU <- 
+```
+
+
+
+## Aritmética con matrices
+
+De manera similar a como aprendimos con los vectores, los operadores comunes: `+`, `-`, `/`, `*`, etc. trabajan de la misma manera en las matrices: la operación se realiza elemento por elemento.
+
+Por ejemplo: `2 * mi_matriz` multiplica cada elemento de `mi_matriz` por `2`. De nuevo R recicla el valor de `2` e internamente crea una matriz de las mismas dimensiones de `mi_matriz` cuyos elementos son el número `2`, luego hace la operación elemento por elemento.
+
+Como el nuevo analista de datos de Lucasfilm, es tu primer tarea encontrar cuantos visitantes fueron a ver cada una de las películas en cada región. Ya tenemos el total de taquilla en `star_wars_matrix`. Supongamos que el precio de cada entrada es de 5 dólares. Recuerda que el valor de la taquilla dividido por el precio es igual al número de entradas vendidas.
+
+- Asigna a la variable `entradas` la matriz con el número estimado de entradas por cada película.
+- Imprime la matriz resultante en la consola.
+
+```{r}
+# Taquilla Star Wars, en millones
+# Construcción de la matriz
+taquillas <- c(461, 314.4, 290.5, 247.9, 309.3, 165.8)
+nombres <- c("A New Hope","The Empire Strikes Back","Return of the Jedi")
+nombres_columnas <- c("EEUU","no-EEUU")
+star_wars_matrix <- matrix(taquillas, nrow = 3, byrow = TRUE, dimnames = list(nombres, nombres_columnas))
+
+# Estimación de entradas vendidas
+entradas <- 
+  
+# Imprime entradas a la consola
+
+```
+
+
+## Aritmética con matrices (2) 
+
+Así como `2*mi_matriz` multiplica cada elemento de `mi_matriz` por `2`, el código  `mi_matriz1 * mi_matriz2` crea una matriz en la cual cada elemento es el producto de los elementos correspondientes en `mi_matriz1` y `mi_matriz2`.
+
+Después de ver a los resultados del ejercicio anterior, el gran jefe Lucas señala que los precios de las entradas subieron un dólar cada vez que salía una nueva película. Tu jefe te pide que vuelvas a hacer el análisis basándote en los precios que encuentras en la matriz `precios` (fuente: imaginación).
+
+_Aquellos familiarizados con operaciones con matrices, noten que esto no es la multiplicación tradicional de matrices, para ejecutar la operación algebraica de multiplicación utiliza el operador `%*%`._
+
+- Asigna a la variable `entradas` la matriz que estima el número de entradas vendidas para cada película en las dos regiones analizadas.
+- Asigna a `entradas_promedio_EEUU` el número de entradas promedio vendidas en EEUU por película.
+- Asigna a `entradas_promedio_noEEUU` el número de entradas promedio vendidas fuera de los EEUU por película.
+
+```{r}
+# Taquilla Star Wars, en Millones
+# Construcción de la matriz
+taquillas <- c(461, 314.4, 290.5, 247.9, 309.3, 165.8)
+nombres <- c("A New Hope","The Empire Strikes Back","Return of the Jedi")
+nombres_columnas <- c("EEUU","no-EEUU")
+star_wars_matrix <- matrix(taquillas, nrow = 3, byrow = TRUE, dimnames = list(nombres, nombres_columnas))
+precios <- matrix(c(5, 5, 6, 6, 7, 7), nrow = 3, byrow = TRUE, dimnames = list(nombres, nombres_columnas)) 
+
+# Número de entradas vendidas
+entradas <- 
+
+# Número promedio de entradas vendidas en EEUU
+entradas_promedio_EEUU <- 
+
+# Número promedio de entradas vendidas fuera de EEUU
+entradas_promedio_noEEUU <- 
+```
+
+
+* * *
+# Factores
+
+## ¿Que son los factores y para qué se usan?
+
+En este capítulo vamos a sumergirnos en el mundo de los **factores**. 
+
+El termino factor se refiere a un tipo de datos utilizado por R para almacenar variables categóricas. Las variables categóricas (como su nombre lo indica) son aquellas que pueden variar dentro de un **número limitado de categorías**. En contraste, una variable numérica continua puede tomar, en principio, infinitos valores.
+
+En nuestros análisis, es importante que R sepa si estamos trabajando con una variable continua o categórica, debido a que los modelos estadísticos y en los análisis de datos se tratan estos tipos de manera diferente.
+
+Un buen ejemplo de una variable categórica es 'Género'. Un individuo puede ser de género "Masculino" o "Femenino" (haciendo caso omiso de individuos intergénero). Así que "Masculino" y "Femenino" son los valores que puede tomar la variable 'Género'.
+
+## ¿Que son los factores y para qué se usan? (2)
+
+Para crear factores en R usamos la función [`factor()`](http://www.rdocumentation.org/packages/base/functions/factor). Lo primero que tenemos que hacer es crear un vector que contenga todas las observaciones de nuestra variable. Por ejemplo el vector `genero` contiene el género de 5 individuos diferentes:
+
+```
+genero <- c("Masculino","Femenino","Femenino","Masculino","Masculino")
+```
+
+Como hemos visto, esta variable puede tomar solo dos valores o categorías. En términos de R nos referimos a estas categorías como los **niveles** (**levels**), en este caso los niveles son: "Masculino" y "Femenino". 
+
+La función [`factor()`](http://www.rdocumentation.org/packages/base/functions/factor) codificará al vector `genero` en un objeto de R llamado **factor** : 
+
+```
+factor_genero <- factor(genero)
+``` 
+
+```{r}
+genero <- c("Masculino", "Femenino", "Femenino", "Masculino", "Masculino")
+
+# Define factor_genero usando la función  factor()
+factor_genero <-
+```
+
+
+## ¿Que son los factores y para qué se usan? (3)
+
+Existen dos tipos de variables categóricas: **nominales** y **ordinales**. 
+
+Una variable categórica nominal es una variable cuyos niveles no tienen ningún orden implícito. Esto significa no tiene sentido preguntarse si un valor es "mayor" o "menor" que otro. Por ejemplo, pensemos en la variable `Género` que como vimos tiene los niveles `Masculino` y `Femenino`, no tiene sentido decir que `Masculino` sea "mayor" o "menor" que `Femenino`. (Aunque los machistas o las feministas extremas pueden no estar de acuerdo!)
+
+En contraste, las variables categóricas ordinales si poseen un orden natural. Por ejemplo la variable categórica  `desempeno_laboral` que tenga las categorías o niveles: `Bajo`, `Medio`, `Alto`. Es claro que existe un orden natural en los niveles de esta variable `Medio` es "menos" que `Alto` y a su vez "mayor que" `Bajo`.
+
+```{r}
+genero <- c("Masculino", "Femenino", "Femenino", "Masculino", "Masculino")
+desempeno_laboral <- c("Alto", "Bajo", "Alto", "Bajo", "Medio")
+
+factor_genero <- factor(genero)
+factor_genero
+factor_desempeno_laboral <- factor(desempeno_laboral, order = TRUE, levels = c("Bajo", "Medio", "Alto"))
+factor_desempeno_laboral
+```
+
+
+genero <- c("Masculino", "Femenino", "Femenino", "Masculino", "Masculino")
+desempeno_laboral <- c("Alto", "Bajo", "Alto", "Bajo", "Medio")
+
+factor_genero <- factor(genero)
+factor_genero
+factor_desempeno_laboral <- factor(desempeno_laboral, order = TRUE, levels = c("Bajo", "Medio", "Alto"))
+factor_desempeno_laboral
+
+
+```{r}
+genero <- c("M", "F", "F", "M", "M")
+
+# Asigna el vector genero como un factor a factor_genero
+factor_genero <- 
+
+# Especifica los niveles de factor_genero
+levels(factor_genero) <- 
+
+factor_genero
+```
+
+
+
+## Resumiendo un factor
+
+Luego de terminar este curso, una de nuestras funciones favoritas en R será [`summary()`](http://www.rdocumentation.org/packages/base/functions/summary) (resumen). Esta función nos dará una visión general del objeto o variable que usemos como argumento:
+
+```
+summary(alguna_variable)
+``` 
+
+Regresando a nuestro ejemplo de la encuesta, nos gustaría saber cuántas respuestas tenemos con `"Masculino"` y cuantas con `"Femenino"`. La función [`summary()`](http://www.rdocumentation.org/packages/base/functions/summary) nos da la respuesta a esta pregunta.
+
+
+Usa la función [`summary()`](http://www.rdocumentation.org/packages/base/functions/summary) en `genero` y `factor_genero`. Interpreta los resultados en ambos casos.
+
+```{r}
+genero <- c("M", "F", "F", "M", "M")
+factor_genero <- factor(genero)
+levels(factor_genero) <- c("Femenino", "Masculino")
+factor_genero
+
+# Escribe el código para ver el resumen de genero
+
+
+# Escribe el código para ver el resumen de factor_genero
+
+```
+
+
+## Batalla de los sexos
+
+_"Todos los animales son iguales, pero algunos son más iguales que otros." -- George Orwell_
+
+En `factor_genero` tenemos un factor con dos niveles: Masculino y Femenino. ¿Cómo sabemos lo que piensa R sobre los niveles de este factor? ¿Es R machista o feminista?
+
+
+```{r}
+genero <- c("M", "F", "F", "M", "M")
+factor_genero <- factor(genero)
+levels(factor_genero) <- c("Femenino", "Masculino")
+
+# Masculino
+factor_genero[1] 
+# Femenino
+factor_genero[2] 
+# Batalla de los sexos:¿Es Masculino mayor que Femenino?
+factor_genero[1] > factor_genero[2] 
+```
+
+## Factores con niveles ordenados
+
+Como los niveles `"Masculino"` y `"Femenino"` son niveles no ordenados de nuestro factor `genero` R responde con un mensaje de advertencia de que esa comparación (por medio del símbolo `>`) no tiene sentido en el caso de factores nominales (no ordenados).
+
+Pero esto no es siempre el caso. A veces vamos a trabajar con factores que tienen un orden natural entre estas categorías. En este caso tenemos que darle la información a R sobre cuál es el orden de los niveles. Supongamos que estamos analizando el desempeño laboral de los trabajadores en una organización y las calificaciones posibles son `"Bajo"`, `"Medio"` y `"Alto"` y que guardas las información en el vector `desempeno`.
+
+Construye el vector `desempeno` sabiendo que: 
+
+- Trabajador 1 tiene un desempeño Medio,
+- Trabajador 2 tiene un desempeño Bajo,
+- Trabajador 3 tiene un desempeño Bajo,
+- Trabajador 4 tiene un desempeño Medio,
+- Trabajador 5 tiene un desempeño Alto,
+
+No hay necesidad de especificar que este vector es un factor.
+
+```{r}
+# Crea el vector desempeno
+desempeno <-
+```
+
+## Factores con niveles ordenados (2)
+
+El vector `desempeno` debería de ser convertido a un factor ordenado porque sus niveles tienen un orden natural. De forma predeterminada la función [`factor()`](http://www.rdocumentation.org/packages/base/functions/factor) transforma el vector `desempeno` en un factor no ordenado. Para crearlo como un factor ordenado necesitamos usar los argumentos adicionales: `ordered` y `levels`. 
+
+```
+factor(algun_vector, ordered = TRUE, levels = c("Nivel1", "Nivel2" ...))
+``` 
+
+Al dar el valor `TRUE` al argumento `ordered` en la función [`factor()`](http://www.rdocumentation.org/packages/base/functions/factor), indicamos que es un factor ordenado. Con el argumento `levels` damos los valores de los niveles en el orden correcto, por ejemplo `levels = c("Bajo", "Medio", "Alto")`.
+
+
+Usa el código de ejemplo para definir la variable `factor_desempeno`. Toma en cuenta que hay un orden específico para estos niveles. No cambies nada del código, éste imprimirá el factor resultante y generará el resumen del mismo.
+
+```{r}
+desempeno <- c("Medio", "Bajo", "Bajo", "Medio", "Alto") 
+
+# Escribe el código para generar el factor ordenado
+factor_desempeno <-  
+
+# Imprime a la consola
+factor_desempeno
+
+# R imprime el resumen automágicamente en el orden correcto
+summary(factor_desempeno)
+```
+
+
+## Comparando vectores ordenados
+
+Al tener un mal día en el trabajo, el `Trabajador 2` entra a tu oficina y empieza a quejarse de que el `Trabajador 5` está atrasando todos los proyectos porque su desempeño en el trabajo es "Bajo". Como sabes que el `Trabajador 2` tiene la reputación de “problemático” decides averiguar si lo que dice tiene sentido.
+
+Dado que `factor_desempeno` es un factor ordenado, esto te permite comparar sus diferentes elementos, a los trabajadores en este caso. Podemos simplemente utilizar operadores de comparación bien conocidos.
+
+Averigua si el desempeño del Trabajador 2 es mejor que el del Trabajador 5. Asigna el resultado a la variable `comparacion`. Recuerda  `a > b` te permite saber si `a` es mayor que `b`.
+
+```{r}
+desempeno <- c("Medio", "Bajo", "Bajo", "Medio", "Alto") 
+factor_desempeno <- factor(desempeno, ordered = TRUE, levels= c("Bajo", "Medio", "Alto"))
+
+# Escribe tu código
+comparacion <- 
+
+# ¿El desempeño del Trabajador 2 es mayor que el del Trabajador 5 ?
+comparacion
+```
+
+* * *
+
+# ¿Que es un data frame?
+
+Quizás recuerdes de nuestro capítulo sobre matrices que todos los elementos que ponemos en una matriz deben de ser del mismo tipo. Por ejemplo, cuando trabajamos con matrices los datos de Star Wars eran todos numéricos.
+
+Cuando trabajamos con datos de por ejemplo, estudios de mercado, las preguntas son como las siguientes:
+
+- '¿Es usted casado?' o preguntas de 'si/no' (datos de tipo lógico o booleano)
+- 'Indique su edad' (variable numérica)
+- '¿Cuál es su opinión sobre este producto?' u otras 'preguntas abiertas'  (variables de tipo caracter)
+- ...
+
+Las respuestas de los encuestados a las preguntas anteriores constituyen un conjunto de datos con diferentes tipos. La mayoría de veces que analizamos datos nos encontramos trabajando con conjuntos que tienen varios tipos.
+
+Un data frame es una estructura de datos rectangular, que contiene las variables en las columnas y las observaciones en las filas. Piensa en un data frame como una hoja de MS Excel o quizás estas familiarizado con otros paquetes estadísticos como SAS o SPSS.
+
+```{r}
+mtcars # conjunto de datos que viene con R
+```
+
+
+## Una rápida mirada a nuestros datos
+
+Vaya! que montón de carros!
+
+Trabajar con conjuntos de datos grandes es muy común en análisis de datos. Cuando este es el caso, tu primera tarea como analista de datos es desarrollar un entendimiento claro de la estructura de sus elementos. Frecuentemente, el primer paso para lograr esto es mostrar solo una pequeña parte del conjunto de datos.
+
+¿Cómo lo hacemos? muy fácil! utilizamos la función [`head()`](http://www.rdocumentation.org/packages/utils/functions/head) que nos permite solo ver las primeras observaciones de un data frame (o algún otro objeto de R). Por otro lado, la función [`tail()`](http://www.rdocumentation.org/packages/utils/functions/head) nos permite ver las ultimas observaciones del data frame.
+
+Ambas funciones [`head()`](http://www.rdocumentation.org/packages/utils/functions/head) y [`tail()`](http://www.rdocumentation.org/packages/utils/functions/head) imprimen una primera línea de encabezados o 'header' la cual contiene los nombres de las variables en el conjunto de datos.
+
+Echa una primera mirada a [`mtcars`](http://www.rdocumentation.org/packages/datasets/functions/mtcars) imprimiendo las primeras observaciones de este data frame.
+
+```{r}
+# Echa un vistazo a los datos
+head(mtcars)
+```
+
+
+## Veamos la estructura
+
+Otro método frecuentemente usado para echar un vistazo rápido a los datos es la función [`str()`](http://www.rdocumentation.org/packages/utils/functions/str). Esta función muestra la estructura de un data frame (u otro objeto de R). En este caso, el comando `str(mtcars)` muestra:
+
+- El número total de observaciones (32 tipos de carros)
+- El número total de variables (11 características de los carros)
+- Una lista completa de las variables (e.g. mpg, cyl ... )
+- El tipo de dato de cada variable (e.g. num for car features)
+- Las primeras observaciones
+
+Aplicar la función [`str()`](http://www.rdocumentation.org/packages/utils/functions/str) será lo primero que hagas cuando recibas un nuevo conjunto de datos. Es una excelente manera de conocer los datos antes de comenzar cualquier análisis.
+
+Investiga la estructura de [`mtcars`](http://www.rdocumentation.org/packages/datasets/functions/mtcars). Asegúrate de ver la misma información que mencionamos arriba (números, variables, etc.).
+
+```{r}
+# Para empezar, echa un vistazo a la estructura de mtcars 
+str(mtcars)
+```
+
+## Creando un data frame
+
+Debido a que estamos usando conjuntos de datos que vienen con R, nos estamos perdiendo de más de la mitad de la diversión de crear nuestros propios data frames, el resto del capítulo está basado en tu propio conjunto de datos. ¿Qué tal si exploramos el espacio?
+
+Como primer objetivo, queremos construir un data frame que describa las características de los ocho planetas del sistema solar. Según un buen amigo llamado Buzz Aldrin, las características principales de un planeta son:
+
+- Tipo de planeta (terrestre o gigante gaseoso).
+- Diámetro del planeta relativo al diámetro de la Tierra.
+- La rotación del planeta del planeta a través del sol relativo a la Tierra.
+- Si el planeta tiene anillos: Verdadero/Falso (TRUE/FALSE).
+
+Después de hacer una investigación de primera clase en [Wikipedia](http://en.wikipedia.org/wiki/Planet), ya estás listo para crear los siguientes vectores: `planetas`, `tipo`, `diametro`, `rotacion` y `anillos` (mira el editor, date cuenta que los elementos de cada vector están relacionados a los demás por medio de la posición).
+
+Un data frame se construye con la función [`data.frame()`](http://www.rdocumentation.org/packages/base/functions/data.frame). Como argumentos, debes dar los vectores mencionados arriba y éstos se convertirán en las diferentes columnas (variables) del data frame, por lo tanto, es muy importante que cada vector tenga el mismo tamaño. Pero no olvides que lo más probable que los vectores contengan tipos diferentes de datos.
+
+La función `data.frame(col1, col2, col3,...)` toma como argumentos los vectores que se convertirán en las columnas del data frame. Las columnas son en este caso, (en este orden): `planeta`, `tipo`, `diametro`, `rotacion` and `anillos`.
+
+```{r}
+planetas <- c("Mercurio", "Venus", "Tierra", "Marte", "Jupiter", "Saturno", "Urano", "Neptuno");
+tipo <- c("Planeta Terrestre", "Planeta Terrestre", "Planeta Terrestre", "Planeta Terrestre", "Gigante Gaseoso", "Gigante Gaseoso", "Gigante Gaseoso", "Gigante Gaseoso")
+diametro <- c(0.382, 0.949, 1, 0.532, 11.209, 9.449, 4.007, 3.883); 
+rotacion <- c(58.64, -243.02, 1, 1.03, 0.41, 0.43, -0.72, 0.67);
+anillos <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE);
+
+# Crea el data frame:
+planetas_df  <-
+
+```
+
+
+## Creando un data frame (2)
+
+Asegúrate que tienes 8 observaciones y 5 variables. El data frame `planetas_df` está en tu espacio de trabajo (workspace) y ahora lo puedes explorar.
+
+*** =instructions
+Usa la función [`str()`](http://www.rdocumentation.org/packages/utils/functions/str) para investigar la estructura de data frame `planetas_df`.
+
+```{r}
+planetas <- c("Mercurio", "Venus", "Tierra", "Marte", "Jupiter", "Saturno", "Urano", "Neptuno");
+tipo <- c("Planeta Terrestre", "Planeta Terrestre", "Planeta Terrestre", "Planeta Terrestre", "Gigante Gaseoso", "Gigante Gaseoso", "Gigante Gaseoso", "Gigante Gaseoso")
+diametro <- c(0.382, 0.949, 1, 0.532, 11.209, 9.449, 4.007, 3.883); 
+rotacion <- c(58.64, -243.02, 1, 1.03, 0.41, 0.43, -0.72, 0.67);
+anillos <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE);
+planetas_df   <- data.frame(planetas, tipo, diametro, rotacion, anillos)
+```
+
+```{r}
+# Da un vistazo a la estructura de planetas_df
+```
+
+
+## Selección de elementos
+
+De manera similar a los vectores y matrices, seleccionamos elementos de un data frame con los corchetes `[ ]`. Usando una coma, separamos los índices que deseamos seleccionar de las filas y las columnas respectivamente. Por ejemplo:
+
+- `mi_data_frame[1,2]` selecciona el elemento ubicado en la primera fila y segunda columna del data frame `mi_data_frame`.
+- `mi_data_frame[1:3,2:4]` selecciona los elementos ubicados en las filas 1,2,3 y columnas 2,3,4 de `mi_data_frame`.
+
+A veces queremos seleccionar todos los elementos de una fila o de una columna. Para hacer esto dejamos en blanco el espacio de la fila o la columna: por ejemplo `mi_data_frame[1,]` selecciona todos los elementos de la primera fila (primera fila y todas las columnas). Apliquemos estas técnicas en `planetas_df`!
+
+- Crea el data frame ` planetas_cercanos_df ` que contenga todos las datos de los primeros tres planetas.
+- Crea el data frame `planetas_lejanos_df` que contenga todos los datos de los últimos tres planetas.
+
+```{r}
+
+planetas <- c("Mercurio", "Venus", "Tierra", "Marte", "Jupiter", "Saturno", "Urano", "Neptuno");
+tipo <- c("Planeta Terrestre", "Planeta Terrestre", "Planeta Terrestre", "Planeta Terrestre", "Gigante Gaseoso", "Gigante Gaseoso", "Gigante Gaseoso", "Gigante Gaseoso")
+diametro <- c(0.382, 0.949, 1, 0.532, 11.209, 9.449, 4.007, 3.883); 
+rotacion <- c(58.64, -243.02, 1, 1.03, 0.41, 0.43, -0.72, 0.67);
+anillos <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE);
+planetas_df   <- data.frame(planetas, tipo, diametro, rotacion, anillos)
+```
+
+
+```{r}
+# El data frame planetas_df de los ejercicios previos está en tu workspace, lo puedes usar
+
+# Selecciona todos los datos de los primeros tres planetas
+planetas_cercanos_df <- 
+
+# Selecciona todos los datos de los últimos tres planetas
+planetas_lejanos_df <- 
+
+# Observemos los datos:
+closest_planets_df
+furthest_planets_df
+```
+
